@@ -1,16 +1,29 @@
 console.debug('osu!Skills helper');
+
+function addLocalButtons($) {
+  // get trainingWrap div from document body
+  var trainingWrap = $('div#trainingWrap');
+
+  // create new div to contain local buttons
+  var localButtonDiv = $('<div id="localButtons"></div>');
+
+  // create local buttons
+  var saveToLocalButton = $('<button id="saveToLocal">Save skills to local</button>');
+  var loadFromLocalButton = $('<button id="loadFromLocal">Load skills from local</button>');
+
+  // add local buttons to new div
+  localButtonDiv.append(saveToLocalButton);
+  localButtonDiv.append(loadFromLocalButton);
+
+  // insert new div as first object in trainingWrap div
+  trainingWrap.prepend(localButtonDiv);
+}
+
 document.onreadystatechange = () => {
   if (document.readyState === "complete") {
     var $ = window.wrappedJSObject.jQuery;
-  
-    // select the input elements using jQuery
-    var inputMin = $('.trainingIntervalInput.min');
-    var inputMax = $('.trainingIntervalInput.max');
-  
-    // modify the value of the input elements and trigger their change event
-    inputMin.val('500');
-    inputMin.trigger('change');
-    inputMax.val('1500');
-    inputMax.trigger('change');
+
+    // add local buttons
+    addLocalButtons($);
   }
 };
