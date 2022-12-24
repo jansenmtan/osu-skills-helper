@@ -5,10 +5,11 @@
   "description": "Convenient helper extension for osu!Skill's training tool.",
   "permissions": [
     "activeTab",
-    "https://osuskills.com/"
+    "*://*.osuskills.com/*"
+
   ],
   "content_scripts": [{
-    "matches": ["https://osuskills.com/training"],
+    "matches": ["*://*.osuskills.com/training"],
     "js": ["content.js"]
   }],
   "background": {
