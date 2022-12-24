@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
-  "name": "My Extension",
+  "name": "osu!Skills helper",
   "version": "1.0",
-  "description": "A short description of my extension",
+  "description": "Convenient helper extension for osu!Skill's training tool.",
   "permissions": [
     "activeTab",
     "https://osuskills.com/"
