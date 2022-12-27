@@ -47,11 +47,19 @@ function addLocalButtons($) {
   var trainingWrap = $('div#trainingWrap');
 
   // create new div to contain local buttons
-  var localButtonDiv = $('<div id="localButtons"></div>');
+  var localButtonDiv = $('<div id="local-buttons"></div>');
 
-  // create local buttons
-  var saveToLocalButton = $('<button id="saveToLocal">Save skills to local</button>');
-  var loadFromLocalButton = $('<button id="loadFromLocal">Load skills from local</button>');
+  // create the save button element
+  var saveToLocalButton = document.createElement('button');
+  saveToLocalButton.innerHTML = 'Save skills to local';
+  saveToLocalButton.id = 'save-button';
+  saveToLocalButton.addEventListener('click', () => {saveSkillIntervalsToLocalStorage($)});
+
+  // create the load button element
+  var loadFromLocalButton = document.createElement('button');
+  loadFromLocalButton.innerHTML = 'Load skills from local';
+  loadFromLocalButton.id = 'load-button';
+  loadFromLocalButton.addEventListener('click', () => {loadSkillIntervalsFromLocalStorage($)});
 
   // add local buttons to new div
   localButtonDiv.append(saveToLocalButton);
@@ -60,6 +68,7 @@ function addLocalButtons($) {
   // insert new div as first object in trainingWrap div
   trainingWrap.prepend(localButtonDiv);
 }
+
 
 document.onreadystatechange = () => {
   if (document.readyState === "complete") {
