@@ -3,6 +3,11 @@
   "name": "osu!Skills helper",
   "version": "0.1.0",
   "description": "Convenient helper extension for osu!Skill's training tool.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "osu-skills-helper@jansenmtan"
+    }
+  },  
   "permissions": [
     "storage",
     "activeTab",
