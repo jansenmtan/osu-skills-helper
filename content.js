@@ -24,18 +24,80 @@ function setSkillIntervals($, localSkillIntervals) {
   });
 }
 
-function saveSkillIntervalsToLocalStorage($) {
-  var skillIntervals = getSkillIntervals($);
-
-  browser.storage.local.set({skillIntervals});
+function getSelectedSkills($) {
+  var selectedSkills = [];
+  var skillCheckboxes = $('[type=checkbox]');
+  for (let i = 0; i < skillCheckboxes.length; i++) {
+    selectedSkills.push(skillCheckboxes[i].checked);
+  }
+  return selectedSkills;
 }
 
-function loadSkillIntervalsFromLocalStorage($) {
-  browser.storage.local.get('skillIntervals').then((value) => {
+function setSelectedSkills($, selectedSkills) {
+  var skillCheckboxes = $('[type=checkbox]');
+  for (let i = 0; i < skillCheckboxes.length; i++) {
+    if (skillCheckboxes[i].checked !== selectedSkills[i]) {
+      skillCheckboxes[i].click();
+    }
+  }
+}
+
+function getModSettings($) {
+  var modSettings = [];
+  var modLabels = $('.modLabel');
+  for (let i = 0; i < modLabels.length; i++) {
+    modSettings.push(modLabels[i].value);
+  }
+  return modSettings;
+}
+
+function setModSettings($, modSettings) {
+  var modSettingDict = {
+    "0": "modIgnored",
+    "1": "modEnabled",
+    "2": "modDisabled"
+  };
+
+  var modButtons = $('.modBtn');
+  var modLabels = $('.modLabel');
+  for (let i = 0; i < modButtons.length; i++) {
+    // for the buttons:
+    var modButton = $(modButtons[i]);
+    // clear current setting
+    modButton.removeClass('modIgnored modEnabled modDisabled');
+    // set saved setting
+    modButton.addClass(modSettingDict[modSettings[i]]);
+
+    // for the labels:
+    var modLabel = $(modLabels[i]);
+    modLabel.value = modSettings[i];
+  }
+}
+
+function saveSettingsToLocalStorage($) {
+  var skillIntervals = getSkillIntervals($);
+  var selectedSkills = getSelectedSkills($);
+  var modSettings = getModSettings($);
+
+  browser.storage.local.set({skillIntervals, selectedSkills, modSettings});
+}
+
+function loadSettingsFromLocalStorage($) {
+  browser.storage.local.get().then((value) => {
     if ('skillIntervals' in value) {
       setSkillIntervals($, value.skillIntervals);
     } else {
-      alert('No skills have been saved to local.')
+      alert('Skill intervals have not been saved to local.');
+    }
+    if ('selectedSkills' in value) {
+      setSelectedSkills($, value.selectedSkills);
+    } else {
+      alert('Skill selection has not been saved to local.');
+    }
+    if ('modSettings' in value) {
+      setModSettings($, value.modSettings);
+    } else {
+      alert('Mod settings have not been saved to local.');
     }
   }, (reason) => {
     console.error(reason);
@@ -51,15 +113,15 @@ function addLocalButtons($) {
 
   // create the save button element
   var saveToLocalButton = document.createElement('button');
-  saveToLocalButton.innerHTML = 'Save skills to local';
+  saveToLocalButton.innerHTML = 'Save settings to local';
   saveToLocalButton.id = 'save-button';
-  saveToLocalButton.addEventListener('click', () => {saveSkillIntervalsToLocalStorage($)});
+  saveToLocalButton.addEventListener('click', () => {saveSettingsToLocalStorage($)});
 
   // create the load button element
   var loadFromLocalButton = document.createElement('button');
-  loadFromLocalButton.innerHTML = 'Load skills from local';
+  loadFromLocalButton.innerHTML = 'Load settings from local';
   loadFromLocalButton.id = 'load-button';
-  loadFromLocalButton.addEventListener('click', () => {loadSkillIntervalsFromLocalStorage($)});
+  loadFromLocalButton.addEventListener('click', () => {loadSettingsFromLocalStorage($)});
 
   // add local buttons to new div
   localButtonDiv.append(saveToLocalButton);
