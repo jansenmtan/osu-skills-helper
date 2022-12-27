@@ -4,6 +4,7 @@
   "version": "1.0",
   "description": "Convenient helper extension for osu!Skill's training tool.",
   "permissions": [
+    "storage",
     "activeTab",
     "*://*.osuskills.com/*"
 
