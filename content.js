@@ -131,7 +131,6 @@ function addLocalButtons($) {
   trainingWrap.prepend(localButtonDiv);
 }
 
-
 document.onreadystatechange = () => {
   if (document.readyState === "complete") {
     var $ = window.wrappedJSObject.jQuery;
@@ -140,3 +139,32 @@ document.onreadystatechange = () => {
     addLocalButtons($);
   }
 };
+
+function getDirectLinkCellTextFromCellText(cellText) {
+  const regex = /http:\/\/osu.ppy.sh\/b\/(\d+)/;
+  var match = cellText.match(regex);
+  if (match) {
+    return `<b><a href="osu://${match[1]}">[DIRECT]</a></b> ${cellText}`;
+  } else {
+    console.debug(`No match found for cell text: ${cellText}`);
+  }
+}
+
+function addDirectLinkButtons() {
+  // change values in 'Map' column
+  var tableRows = document.querySelector('table').rows;
+
+  // change only if there are maps in the table
+  //  this is the case when there are more than 2 rows in the table
+  if (tableRows.length > 2) {
+    for (let i = 1; i < tableRows.length; i++) {
+      var cellInMapColumn = tableRows[i].cells[0];
+      cellInMapColumn.innerHTML = getDirectLinkCellTextFromCellText(cellInMapColumn.innerHTML);
+    }
+  }
+}
+
+// want to run addDirectLinkButtons after the table changes
+var table = document.querySelector('table tbody');
+var observer = new MutationObserver(() => {addDirectLinkButtons();});
+observer.observe(table, {childList: true});
