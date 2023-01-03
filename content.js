@@ -69,7 +69,7 @@ function setModSettings($, modSettings) {
     modButton.addClass(modSettingDict[modSettings[i]]);
 
     // for the labels:
-    var modLabel = $(modLabels[i]);
+    var modLabel = modLabels[i];
     modLabel.value = modSettings[i];
   }
 }
