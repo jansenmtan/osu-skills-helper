@@ -144,7 +144,7 @@ function getDirectLinkCellTextFromCellText(cellText) {
   const regex = /http:\/\/osu.ppy.sh\/b\/(\d+)/;
   var match = cellText.match(regex);
   if (match) {
-    return `<b><a href="osu://${match[1]}">[DIRECT]</a></b> ${cellText}`;
+    return `<b><a href="osu://b/${match[1]}">[DIRECT]</a></b> ${cellText}`;
   } else {
     console.debug(`No match found for cell text: ${cellText}`);
   }
