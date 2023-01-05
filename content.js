@@ -1,13 +1,18 @@
 console.debug('osu!Skills helper');
 
+function getSettings(elements, elementProperty) {
+  var settings = [];
+  for (let i = 0; i < elements.length; i++) {
+    settings.push(elements[i][elementProperty]);
+  }
+  return settings;
+}
+
 function getSkillIntervals($) {
   var skillIntervals = {};
   ['.min', '.max'].forEach((el) => {
     var trainingIntervalInput = $(el);
-    var skillInterval = [];
-    for (let i = 0; i < trainingIntervalInput.length; i++) {
-      skillInterval.push(trainingIntervalInput[i].value);
-    }
+    var skillInterval = getSettings(trainingIntervalInput, 'value');
     skillIntervals[el] = skillInterval;
   });
   return skillIntervals;
@@ -25,12 +30,7 @@ function setSkillIntervals($, localSkillIntervals) {
 }
 
 function getSelectedSkills($) {
-  var selectedSkills = [];
-  var skillCheckboxes = $('[type=checkbox]');
-  for (let i = 0; i < skillCheckboxes.length; i++) {
-    selectedSkills.push(skillCheckboxes[i].checked);
-  }
-  return selectedSkills;
+  return getSettings($('[type=checkbox]'), 'checked');
 }
 
 function setSelectedSkills($, selectedSkills) {
@@ -43,12 +43,7 @@ function setSelectedSkills($, selectedSkills) {
 }
 
 function getModSettings($) {
-  var modSettings = [];
-  var modLabels = $('.modLabel');
-  for (let i = 0; i < modLabels.length; i++) {
-    modSettings.push(modLabels[i].value);
-  }
-  return modSettings;
+  return getSettings($('.modLabel'), 'value');
 }
 
 function setModSettings($, modSettings) {
