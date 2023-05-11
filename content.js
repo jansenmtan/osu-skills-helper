@@ -143,6 +143,12 @@ function getDirectLinkCellTextFromCellText(cellText) {
   }
 }
 
+function existsDirectLinkCellText(cellText) {
+  const regex = /osu:\/\/b\/\d+/;
+  var match = cellText.match(regex);
+  return Boolean(match);
+}
+
 function addDirectLinkButtons() {
   // change values in 'Map' column
   var tableRows = document.querySelector('table').rows;
@@ -152,7 +158,10 @@ function addDirectLinkButtons() {
   if (tableRows.length > 2) {
     for (let i = 1; i < tableRows.length; i++) {
       var cellInMapColumn = tableRows[i].cells[0];
-      cellInMapColumn.innerHTML = getDirectLinkCellTextFromCellText(cellInMapColumn.innerHTML);
+      var cellHTML = cellInMapColumn.innerHTML;
+      if (!existsDirectLinkCellText(cellHTML)) {
+        cellInMapColumn.innerHTML = getDirectLinkCellTextFromCellText(cellHTML);
+      }
     }
   }
 }
