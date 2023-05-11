@@ -126,14 +126,12 @@ function addLocalButtons($) {
   trainingWrap.prepend(localButtonDiv);
 }
 
-document.onreadystatechange = () => {
-  if (document.readyState === "complete") {
-    var $ = window.wrappedJSObject.jQuery;
 
-    // add local buttons
-    addLocalButtons($);
-  }
-};
+var $ = window.wrappedJSObject.jQuery;
+
+// add local buttons
+addLocalButtons($);
+
 
 function getDirectLinkCellTextFromCellText(cellText) {
   const regex = /http:\/\/osu.ppy.sh\/b\/(\d+)/;
