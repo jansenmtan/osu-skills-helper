@@ -133,11 +133,16 @@ var $ = window.wrappedJSObject.jQuery;
 addLocalButtons($);
 
 
-function getDirectLinkCellTextFromCellText(cellText) {
+function getDirectLinkElementFromCellText(cellText) {
   const regex = /http:\/\/osu.ppy.sh\/b\/(\d+)/;
   var match = cellText.match(regex);
   if (match) {
-    return `<b><a href="osu://b/${match[1]}">[DIRECT]</a></b> ${cellText}`;
+    var linkElement = document.createElement("a");
+    linkElement.href = "osu://b/" + match[1];
+    linkElement.innerHTML = "[DIRECT] ";
+    var boldElement = document.createElement("b");
+    boldElement.appendChild(linkElement);
+    return boldElement;
   } else {
     console.debug(`No match found for cell text: ${cellText}`);
   }
@@ -160,7 +165,8 @@ function addDirectLinkButtons() {
       var cellInMapColumn = tableRows[i].cells[0];
       var cellHTML = cellInMapColumn.innerHTML;
       if (!existsDirectLinkCellText(cellHTML)) {
-        cellInMapColumn.innerHTML = getDirectLinkCellTextFromCellText(cellHTML);
+        var directLinkElement = getDirectLinkElementFromCellText(cellHTML);
+        cellInMapColumn.insertBefore(directLinkElement, cellInMapColumn.firstChild);
       }
     }
   }
