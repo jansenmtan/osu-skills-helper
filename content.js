@@ -99,12 +99,12 @@ function loadSettingsFromLocalStorage($) {
   });
 }
 
-function addLocalButtons($) {
+function addLocalDiv($) {
   // get trainingWrap div from document body
   var trainingWrap = $('div#trainingWrap');
 
-  // create new div to contain local buttons
-  var localButtonDiv = $('<div id="local-buttons"></div>');
+  // create new div to contain local profile UI
+  var localDiv = $('<div id="local-profile-ui"></div>');
 
   // create the save button element
   var saveToLocalButton = document.createElement('button');
@@ -119,9 +119,25 @@ function addLocalButtons($) {
   loadFromLocalButton.addEventListener('click', () => {loadSettingsFromLocalStorage($)});
 
   // add local buttons to new div
-  localButtonDiv.append(saveToLocalButton);
-  localButtonDiv.append(loadFromLocalButton);
+  localDiv.append(saveToLocalButton);
+  localDiv.append(loadFromLocalButton);
 
+  var selectElement = $('<select id="profile-select"></select>');
+  localDiv.prepend(selectElement);
+  var option = new Option("profile example", 1, false, false);
+  selectElement.append(option).trigger('change');
+
+  // insert new div as first object in trainingWrap div
+  trainingWrap.prepend(localDiv);
+}
+
+
+// add local buttons
+addLocalDiv($);
+
+
+$(document).ready(function() {
+  // inject select2 css into page
   fetch(chrome.runtime.getURL('lib/select2.min.css'))
   .then(response => response.text())
   .then(css => {
@@ -129,21 +145,7 @@ function addLocalButtons($) {
     style.textContent = css;
     document.head.append(style);
   });
-  var selectElement = $('<select id="profile-select"></select>');
-  localButtonDiv.append(selectElement);
-  var option = new Option("profile example", 1, false, false);
-  selectElement.append(option).trigger('change');
-
-  // insert new div as first object in trainingWrap div
-  trainingWrap.prepend(localButtonDiv);
-}
-
-
-// add local buttons
-addLocalButtons($);
-
-
-$(document).ready(function() {
+  // initialize select2 element
   $('#profile-select').select2({ tags: true });
 });
 
