@@ -16,7 +16,12 @@
   ],
   "content_scripts": [{
     "matches": ["*://*.osuskills.com/training"],
-    "js": ["content.js"]
+    "js": [
+		"lib/jquery-1.9.1.min.js",
+		"lib/jquery-ui.min.js",
+		"lib/script.js",
+		"content.js"
+	]
   }],
   "background": {
     "scripts": ["background.js"]

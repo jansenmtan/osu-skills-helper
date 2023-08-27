@@ -25,7 +25,7 @@ function setSkillIntervals($, localSkillIntervals) {
     for (let i = 0; i < trainingIntervalInput.length; i++) {
       trainingIntervalInput[i].value = skillInterval[i];
     }
-    trainingIntervalInput.trigger('change');
+    $(el).trigger('change'); // for some reason using `trainingIntervalInput` doesn't work.
   });
 }
 
@@ -126,8 +126,6 @@ function addLocalButtons($) {
   trainingWrap.prepend(localButtonDiv);
 }
 
-
-var $ = window.wrappedJSObject.jQuery;
 
 // add local buttons
 addLocalButtons($);
