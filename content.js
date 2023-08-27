@@ -122,6 +122,18 @@ function addLocalButtons($) {
   localButtonDiv.append(saveToLocalButton);
   localButtonDiv.append(loadFromLocalButton);
 
+  fetch(chrome.runtime.getURL('lib/select2.min.css'))
+  .then(response => response.text())
+  .then(css => {
+    let style = document.createElement('style');
+    style.textContent = css;
+    document.head.append(style);
+  });
+  var selectElement = $('<select id="profile-select"></select>');
+  localButtonDiv.append(selectElement);
+  var option = new Option("profile example", 1, false, false);
+  selectElement.append(option).trigger('change');
+
   // insert new div as first object in trainingWrap div
   trainingWrap.prepend(localButtonDiv);
 }
@@ -129,6 +141,11 @@ function addLocalButtons($) {
 
 // add local buttons
 addLocalButtons($);
+
+
+$(document).ready(function() {
+  $('#profile-select').select2({ tags: true });
+});
 
 
 function getDirectLinkElementFromCellText(cellText) {

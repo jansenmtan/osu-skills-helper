@@ -20,6 +20,7 @@
 		"lib/jquery-1.9.1.min.js",
 		"lib/jquery-ui.min.js",
 		"lib/script.js",
+		"lib/select2.min.js",
 		"content.js"
 	]
   }],
