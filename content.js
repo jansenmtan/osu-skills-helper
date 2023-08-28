@@ -77,23 +77,69 @@ function saveSettingsToLocalStorage($) {
   browser.storage.local.set({skillIntervals, selectedSkills, modSettings});
 }
 
-function loadSettingsFromLocalStorage($) {
+function saveProfileToLocalStorage($) {
+  var profileName = $("#profile-select").val();
+  var skillIntervals = getSkillIntervals($);
+  var selectedSkills = getSelectedSkills($);
+  var modSettings = getModSettings($);
+
+  browser.storage.local.set({[profileName]: {skillIntervals, selectedSkills, modSettings}});
+}
+
+function loadProfileFromLocalStorage($) {
+  var selectedProfile = $("#profile-select").val();
+  browser.storage.local.get(selectedProfile).then((value) => {
+    var profile = value[selectedProfile];
+    if (profile === undefined) {
+      console.error(`Can't load profile '${selectedProfile}': it is undefined.`);
+      alert(`Can't load profile '${selectedProfile}'. It might not exist.`);
+      return;
+    }
+    if ('skillIntervals' in profile) {
+      setSkillIntervals($, profile.skillIntervals);
+    } else {
+      alert('Skill intervals have not been saved to this profile.');
+    }
+    if ('selectedSkills' in profile) {
+      setSelectedSkills($, profile.selectedSkills);
+    } else {
+      alert('Skill selection has not been saved to this profile.');
+    }
+    if ('modSettings' in profile) {
+      setModSettings($, profile.modSettings);
+    } else {
+      alert('Mod settings have not been saved to this profile.');
+    }
+  }, (reason) => {
+    console.error(reason);
+  });
+}
+
+function removeProfileFromLocalStorage($) {
+  var selectedProfile = $("#profile-select").val();
+  browser.storage.local.remove(selectedProfile).then(() => {
+    $('#profile-select').find(`option[value="${selectedProfile}"]`).remove();
+    $('#profile-select').trigger('change');
+    $('#profile-select').select2('close');
+    console.debug(`osu!Skills helper: profile '${selectedProfile}' removed.`);
+  }, (reason) => {
+    console.error(reason);
+  });
+}
+
+function repopulateProfileSelect($) {
+  var selectElement = $("#profile-select");
+
+  selectElement.empty();
+  selectElement.append(new Option()); // https://select2.org/placeholders#single-select-placeholders
+
   browser.storage.local.get().then((value) => {
-    if ('skillIntervals' in value) {
-      setSkillIntervals($, value.skillIntervals);
-    } else {
-      alert('Skill intervals have not been saved to local.');
+    var profileNames = Object.keys(value);
+    for (const name of profileNames) {
+      var option = new Option(name, name, false, false);
+      selectElement.append(option);
     }
-    if ('selectedSkills' in value) {
-      setSelectedSkills($, value.selectedSkills);
-    } else {
-      alert('Skill selection has not been saved to local.');
-    }
-    if ('modSettings' in value) {
-      setModSettings($, value.modSettings);
-    } else {
-      alert('Mod settings have not been saved to local.');
-    }
+    selectElement.trigger("change");
   }, (reason) => {
     console.error(reason);
   });
@@ -105,27 +151,67 @@ function addLocalDiv($) {
 
   // create new div to contain local profile UI
   var localDiv = $('<div id="local-profile-ui"></div>');
+  localDiv.css({width: '100%', maxWidth: '700px', display: 'flex'});
 
   // create the save button element
   var saveToLocalButton = document.createElement('button');
-  saveToLocalButton.innerHTML = 'Save settings to local';
+  saveToLocalButton.innerHTML = 'Save to profile';
   saveToLocalButton.id = 'save-button';
-  saveToLocalButton.addEventListener('click', () => {saveSettingsToLocalStorage($)});
+  saveToLocalButton.style.backgroundColor = '#fffcc6';
+  saveToLocalButton.addEventListener('click', () => {
+    // TODO: probably add overwrite prompt on existing profile...
+    saveProfileToLocalStorage($);
+  });
 
-  // create the load button element
-  var loadFromLocalButton = document.createElement('button');
-  loadFromLocalButton.innerHTML = 'Load settings from local';
-  loadFromLocalButton.id = 'load-button';
-  loadFromLocalButton.addEventListener('click', () => {loadSettingsFromLocalStorage($)});
+  // create the create new profile button element
+  var createNewButton = document.createElement('button');
+  createNewButton.innerHTML = 'Create new profile';
+  createNewButton.id = 'create-new-button';
+  createNewButton.style.backgroundColor = '#c4ffc4';
+  createNewButton.addEventListener('click', () => {
+    var input = prompt("New profile name:");
+    if (input != null) {
+      if ($('#profile-select').find(`option[value="${input}"]`).length) {
+        alert(`Profile "${input}" already exists!`);
+      } else {
+        var option = new Option(input, input, false, true);
+        $('#profile-select').append(option).trigger('change');
+        $('#profile-select').select2('close');
+        saveProfileToLocalStorage($);
+      }
+    }
+  });
+
+  // create the remove profile button element
+  var removeFromLocalButton = document.createElement('button');
+  removeFromLocalButton.innerHTML = 'Delete profile';
+  removeFromLocalButton.id = 'remove-button';
+  removeFromLocalButton.style.backgroundColor = '#ffc1c1';
+  removeFromLocalButton.addEventListener('click', () => {
+    removeProfileFromLocalStorage($);
+  });
 
   // add local buttons to new div
   localDiv.append(saveToLocalButton);
-  localDiv.append(loadFromLocalButton);
+  localDiv.append(createNewButton);
+  localDiv.append(removeFromLocalButton);
 
   var selectElement = $('<select id="profile-select"></select>');
+  selectElement.css({flexGrow: '1'});
   localDiv.prepend(selectElement);
-  var option = new Option("profile example", 1, false, false);
-  selectElement.append(option).trigger('change');
+
+  // on select, load profile from local
+  selectElement.on('select2:select', (e) => {
+    // check if selected element is newly created tag
+    if (e.params.data.element !== undefined) {
+      loadProfileFromLocalStorage($);
+    } else { // if it is newly created, then save it to local. why not?
+      var profileName = $('#profile-select').val();
+      var option = new Option(profileName, profileName, false, true);
+      $('#profile-select').append(option).trigger('change');
+      saveProfileToLocalStorage($);
+    }
+  });
 
   // insert new div as first object in trainingWrap div
   trainingWrap.prepend(localDiv);
@@ -146,7 +232,12 @@ $(document).ready(function() {
     document.head.append(style);
   });
   // initialize select2 element
-  $('#profile-select').select2({ tags: true });
+  repopulateProfileSelect($);
+  $('#profile-select').select2({
+    placeholder: "Default profile",
+    tags: true,
+    width: 'resolve'
+  });
 });
 
 
