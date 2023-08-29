@@ -19,14 +19,11 @@ function getSkillIntervals($) {
 }
 
 function setSkillIntervals($, localSkillIntervals) {
-  ['.min', '.max'].forEach((el) => {
-    var trainingIntervalInput = $(el);
-    var skillInterval = localSkillIntervals[el];
-    for (let i = 0; i < trainingIntervalInput.length; i++) {
-      trainingIntervalInput[i].value = skillInterval[i];
-    }
-    $(el).trigger('change'); // for some reason using `trainingIntervalInput` doesn't work.
-  });
+  var sliderRanges = $('.slider-range');
+  for (let i = 0; i < sliderRanges.length; i++) {
+    var sliderValues = [localSkillIntervals['.min'][i], localSkillIntervals['.max'][i]];
+    $(sliderRanges[i]).slider('values', sliderValues);
+  }
 }
 
 function getSelectedSkills($) {
@@ -223,6 +220,24 @@ addLocalDiv($);
 
 
 $(document).ready(function() {
+  // initialize slider-range elements
+  $( ".slider-range" ).slider({
+    range: true,
+    min: 0,
+    max: 2000,
+    values: [ 100, 1000 ],
+    change: function( event, ui ) {
+     if($(this).prev(".skillLabel").prop("checked"))
+       $(this).prev(".skillLabel").click();
+     $(this).parent().children(".min").val(ui.values[ 0 ]);
+     $(this).parent().children(".max").val(ui.values[ 1 ]);
+    },
+    slide: function( event, ui ) {
+     $(this).next(".min").val(ui.values[ 0 ]);
+     $(this).next(".min").next(".max").val(ui.values[ 1 ]);
+    }
+  });
+    
   // inject select2 css into page
   fetch(chrome.runtime.getURL('lib/select2.min.css'))
   .then(response => response.text())

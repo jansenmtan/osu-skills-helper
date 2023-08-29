@@ -19,7 +19,6 @@
     "js": [
 		"lib/jquery-3.7.0.min.js",
 		"lib/jquery-ui.min.js",
-		"lib/script.js",
 		"lib/select2.min.js",
 		"content.js"
 	]
